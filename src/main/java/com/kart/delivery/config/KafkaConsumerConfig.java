@@ -16,7 +16,7 @@ import org.springframework.util.backoff.FixedBackOff;
 public class KafkaConsumerConfig {
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, OrderEvent> catalogKafkaListenerContainerFactory(
+    public ConcurrentKafkaListenerContainerFactory<String, OrderEvent> orderKafkaListenerContainerFactory(
             ConsumerFactory<String, OrderEvent> consumerFactory,
             KafkaTemplate<Object, Object> kafkaTemplate
     ) {
