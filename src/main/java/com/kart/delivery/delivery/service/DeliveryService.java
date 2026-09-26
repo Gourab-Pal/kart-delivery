@@ -48,4 +48,10 @@ public class DeliveryService {
         deliveryEntity.updateStatus(request.status(), request.trackingNumber());
         return DeliveryResponse.from(deliveryEntity);
     }
+
+    @Transactional
+    public void cancelDeliveryRecord(UUID orderId) {
+        DeliveryEntity deliveryEntity = deliveryRepository.findByOrderId(orderId).orElseThrow(() -> new OrderDetailsNotFoundException(orderId));
+        deliveryEntity.updateStatus(DeliveryEntity.DeliveryStatus.CANCELLED, null);
+    }
 }
