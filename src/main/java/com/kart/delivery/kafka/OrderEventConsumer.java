@@ -1,6 +1,9 @@
 package com.kart.delivery.kafka;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.kart.delivery.delivery.entity.DeliveryEntity;
+import com.kart.delivery.delivery.exception.OrderDetailsNotFoundException;
+import com.kart.delivery.delivery.repository.DeliveryRepository;
 import com.kart.delivery.delivery.service.DeliveryService;
 import com.kart.delivery.kafka.event.OrderEvent;
 import org.slf4j.Logger;
@@ -15,9 +18,11 @@ public class OrderEventConsumer {
 
     private static final Logger logger = LoggerFactory.getLogger(OrderEventConsumer.class);
     private final DeliveryService deliveryService;
+    DeliveryRepository deliveryRepository;
 
-    public OrderEventConsumer(DeliveryService deliveryService) {
+    public OrderEventConsumer(DeliveryService deliveryService,  DeliveryRepository deliveryRepository) {
         this.deliveryService = deliveryService;
+        this.deliveryRepository = deliveryRepository;
     }
 
     @KafkaListener(
@@ -44,6 +49,9 @@ public class OrderEventConsumer {
     }
 
     private void handleOrderCancelled(OrderEvent event) {
-        // will handle it later
+        JsonNode payload = event.payload();
+        UUID orderId = UUID.fromString(payload.get("orderId").asText());
+        DeliveryEntity deliveryEntity = deliveryRepository.findByOrderId(orderId).orElseThrow(() -> new OrderDetailsNotFoundException(orderId));
+        deliveryEntity.updateStatus(DeliveryEntity.DeliveryStatus.CANCELLED, null);
     }
 }
