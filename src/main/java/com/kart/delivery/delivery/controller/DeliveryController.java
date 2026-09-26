@@ -3,6 +3,7 @@ package com.kart.delivery.delivery.controller;
 import com.kart.delivery.delivery.dto.DeliveryResponse;
 import com.kart.delivery.delivery.dto.DeliveryStatusUpdateRequest;
 import com.kart.delivery.delivery.service.DeliveryService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,7 +27,7 @@ public class DeliveryController {
 
     @PostMapping("/update")
     @ResponseStatus(HttpStatus.OK)
-    public DeliveryResponse updateDeliveryStatus(DeliveryStatusUpdateRequest request) {
+    public DeliveryResponse updateDeliveryStatus(@Valid @RequestBody DeliveryStatusUpdateRequest request) {
         return deliveryService.updateDeliveryStatus(request);
     }
 }
