@@ -44,6 +44,9 @@ public class OrderEventConsumer {
     }
 
     private void handleOrderCancelled(OrderEvent event) {
-        // will handle it later
+        JsonNode payload = event.payload();
+        UUID orderId = UUID.fromString(payload.get("orderId").asText());
+        deliveryService.cancelDeliveryRecord(orderId);
+        logger.info("Delivery record cancelled for orderId: {}", orderId);
     }
 }
