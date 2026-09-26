@@ -53,7 +53,7 @@ public class DeliveryService {
 
         DeliveryEntity deliveryEntity = deliveryRepository.findByOrderId(request.orderId()).orElseThrow(() -> new OrderDetailsNotFoundException(request.orderId()));
         deliveryEntity.updateStatus(request.status(), request.trackingNumber());
-        if(request.status().toString().equals("DELIVERED")) {
+        if(request.status().toString().equals("DELIVERED") && !deliveryEntity.getStatus().toString().equals("DELIVERED")) {
             outboxEventService.saveEvent(
                     "delivery",
                     deliveryEntity.getId(),
