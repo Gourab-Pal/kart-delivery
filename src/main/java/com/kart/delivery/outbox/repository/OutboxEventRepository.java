@@ -12,7 +12,7 @@ import java.util.UUID;
 public interface OutboxEventRepository extends JpaRepository<OutboxEventEntity, UUID> {
 
     @Query(value = """
-        SELECT * FROM kart_order.outbox_event
+        SELECT * FROM kart_delivery.outbox_event
         WHERE ((status = 'PENDING' AND next_attempt_at <= :now) OR (status = 'PROCESSING' AND locked_until <= :now))
         ORDER BY next_attempt_at ASC, created_at ASC
         LIMIT :batchSize

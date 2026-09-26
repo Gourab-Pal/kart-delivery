@@ -16,7 +16,7 @@ import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "outbox_event", schema = "kart_order")
+@Table(name = "outbox_event", schema = "kart_delivery")
 public class OutboxEventEntity {
 
     @Id
