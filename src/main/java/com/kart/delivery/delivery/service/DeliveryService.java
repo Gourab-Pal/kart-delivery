@@ -5,6 +5,8 @@ import com.kart.delivery.delivery.dto.DeliveryStatusUpdateRequest;
 import com.kart.delivery.delivery.entity.DeliveryEntity;
 import com.kart.delivery.delivery.exception.OrderDetailsNotFoundException;
 import com.kart.delivery.delivery.repository.DeliveryRepository;
+import com.kart.delivery.kafka.event.ProductDeliveredPayload;
+import com.kart.delivery.outbox.service.OutboxEventService;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -14,9 +16,14 @@ import java.util.UUID;
 public class DeliveryService {
 
     private final DeliveryRepository deliveryRepository;
+    private final OutboxEventService outboxEventService;
 
-    public DeliveryService(DeliveryRepository deliveryRepository) {
+    public DeliveryService(
+            DeliveryRepository deliveryRepository,
+            OutboxEventService outboxEventService
+    ) {
         this.deliveryRepository = deliveryRepository;
+        this.outboxEventService = outboxEventService;
     }
 
     @Transactional
@@ -45,7 +52,17 @@ public class DeliveryService {
         }
 
         DeliveryEntity deliveryEntity = deliveryRepository.findByOrderId(request.orderId()).orElseThrow(() -> new OrderDetailsNotFoundException(request.orderId()));
+        boolean newDelivery = request.status() == DeliveryEntity.DeliveryStatus.DELIVERED && deliveryEntity.getStatus() != DeliveryEntity.DeliveryStatus.DELIVERED;
         deliveryEntity.updateStatus(request.status(), request.trackingNumber());
+        if(newDelivery) {
+            outboxEventService.saveEvent(
+                    "delivery",
+                    deliveryEntity.getId(),
+                    "PRODUCTS_DELIVERED",
+                    1,
+                    new ProductDeliveredPayload(deliveryEntity.getId(), request.orderId())
+            );
+        }
         return DeliveryResponse.from(deliveryEntity);
     }
 
