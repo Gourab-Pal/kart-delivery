@@ -11,6 +11,8 @@ public record DeliveryStatusUpdateRequest(
         UUID orderId,
 
         @NotNull
-        DeliveryEntity.DeliveryStatus status
+        DeliveryEntity.DeliveryStatus status,
+
+        String trackingNumber
 ) {
 }

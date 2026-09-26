@@ -112,12 +112,39 @@ public class DeliveryEntity {
         this.trackingNumber = trackingNumber;
     }
 
-    public void updateStatus(DeliveryStatus status) {
+    public void updateStatus(DeliveryStatus status, String trackingNumber) {
         if (status == null) {
             throw new IllegalArgumentException("Delivery status cannot be null");
         }
 
+        OffsetDateTime now = OffsetDateTime.now();
+
+        switch (status) {
+            case PICKED_UP -> {
+                if(this.pickedUpAt == null) {
+                    this.pickedUpAt = now;
+                }
+            }
+            case CANCELLED -> {
+                if(this.cancelledAt == null) {
+                    this.cancelledAt = now;
+                }
+            }
+            case DELIVERED -> {
+                if(this.deliveredAt == null) {
+                    this.deliveredAt = now;
+                }
+            }
+            case READY_FOR_PICKUP -> {
+                if(this.trackingNumber == null) {
+                    this.trackingNumber = trackingNumber;
+                }
+            }
+            default -> {}
+        }
+
         this.status = status;
+        this.updatedAt = now;
     }
 
     public enum DeliveryStatus {

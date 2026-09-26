@@ -45,7 +45,7 @@ public class DeliveryService {
         }
 
         DeliveryEntity deliveryEntity = deliveryRepository.findByOrderId(request.orderId()).orElseThrow(() -> new OrderDetailsNotFoundException(request.orderId()));
-        deliveryEntity.updateStatus(request.status());
+        deliveryEntity.updateStatus(request.status(), request.trackingNumber());
         return DeliveryResponse.from(deliveryEntity);
     }
 }
