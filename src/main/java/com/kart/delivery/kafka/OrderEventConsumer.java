@@ -2,7 +2,7 @@ package com.kart.delivery.kafka;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.kart.delivery.delivery.service.DeliveryService;
-import com.kart.delivery.kafka.event.OrderEvent;
+import com.kart.delivery.kafka.event.EventEnvelope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -25,7 +25,7 @@ public class OrderEventConsumer {
             groupId = "${spring.kafka.consumer.group-id}",
             containerFactory = "orderKafkaListenerContainerFactory"
     )
-    public void consume(OrderEvent event) {
+    public void consume(EventEnvelope event) {
         switch (event.eventType()) {
             case "ORDER_CONFIRMED" ->
                 handleOrderConfirmed(event);
@@ -36,14 +36,14 @@ public class OrderEventConsumer {
         }
     }
 
-    private void handleOrderConfirmed(OrderEvent event) {
+    private void handleOrderConfirmed(EventEnvelope event) {
         JsonNode payload = event.payload();
         UUID orderId = UUID.fromString(payload.get("orderId").asText());
         deliveryService.createDeliveryRecord(orderId);
         logger.info("Delivery record created for orderId: {}", orderId);
     }
 
-    private void handleOrderCancelled(OrderEvent event) {
+    private void handleOrderCancelled(EventEnvelope event) {
         JsonNode payload = event.payload();
         UUID orderId = UUID.fromString(payload.get("orderId").asText());
         deliveryService.cancelDeliveryRecord(orderId);
