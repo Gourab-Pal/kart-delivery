@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
-public record OrderEvent(
+public record EventEnvelope(
         UUID eventId,
         String eventType,
         int eventVersion,
